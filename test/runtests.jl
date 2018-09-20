@@ -13,8 +13,9 @@ Conda.add("curl", env)
 Conda.add("python", env)
 
 cmd = `python -c "import sys; print(sys.executable)"`
-path = rstrip(read(_set_conda_env(cmd, env), String))
-@test startswith(normpath(path), normpath(bin_dir(env)))
+sys_executable = rstrip(read(_set_conda_env(cmd, env), String))
+@info sys_executable
+@test startswith(normpath(sys_executable), normpath(bin_dir(env)))
 
 cmd = _set_conda_env(`python -c "import zmq"`, env)
 @test_throws Exception run(cmd)
