@@ -1,4 +1,7 @@
 using Conda, Compat, VersionParsing
+using Conda: _set_conda_env, bin_dir
+using Compat
+using Compat: @info
 using Compat.Test
 
 Conda.update()
@@ -6,6 +9,19 @@ Conda.update()
 env = :test_conda_jl
 @test Conda.exists("curl", env)
 Conda.add("curl", env)
+
+Conda.add("python", env)
+
+cmd = `python -c "import sys; print(sys.executable)"`
+sys_executable = rstrip(read(_set_conda_env(cmd, env), String))
+@info sys_executable
+@test startswith(normpath(sys_executable), normpath(bin_dir(env)))
+
+cmd = _set_conda_env(`python -c "import zmq"`, env)
+@test_throws Exception run(cmd)
+@test !success(cmd)
+Conda.add("pyzmq", env)
+run(cmd)
 
 curlvers = Conda.version("curl",env)
 @test curlvers >= v"5.0"
