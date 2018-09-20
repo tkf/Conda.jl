@@ -1,5 +1,9 @@
 using Conda, Compat, VersionParsing
+using Compat
+using Compat: @info
 using Compat.Test
+
+exe = Compat.Sys.iswindows() ? ".exe" : ""
 
 Conda.update()
 
@@ -7,11 +11,21 @@ env = :test_conda_jl
 @test Conda.exists("curl", env)
 Conda.add("curl", env)
 
+@testset "Install Python package" begin
+    Conda.add("python", env)
+    pythonpath = joinpath(Conda.python_dir(env), "python" * exe)
+    @test isfile(pythonpath)
+
+    cmd = Conda._set_conda_env(`$pythonpath -c "import zmq"`, env)
+    @test_throws Exception run(cmd)
+    @test !success(cmd)
+    Conda.add("pyzmq", env)
+    run(cmd)
+end
+
 curlvers = Conda.version("curl",env)
 @test curlvers >= v"5.0"
 @test Conda.exists("curl==$curlvers", env)
-
-exe = Compat.Sys.iswindows() ? ".exe" : ""
 
 curl_path = joinpath(Conda.bin_dir(env), "curl" * exe)
 @test isfile(curl_path)
