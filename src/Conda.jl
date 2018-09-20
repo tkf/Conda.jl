@@ -103,7 +103,17 @@ function _set_conda_env(cmd, env::Environment=ROOTENV)
     env_var["PYTHONIOENCODING"]="UTF-8"
     env_var["CONDARC"] = conda_rc(env)
     env_var["CONDA_PREFIX"] = prefix(env)
+    _set_path(env_var, env)
     setenv(cmd, env_var)
+end
+
+function _set_path(env_var, env)
+    path_sep = Compat.Sys.iswindows() ? ';' : ':'
+    if haskey(ENV, "PATH")
+        env_var["PATH"] = bin_dir(env) * path_sep * ENV["PATH"]
+    else
+        env_var["PATH"] = bin_dir(env)
+    end
 end
 
 "Run conda command with environment variables set."
