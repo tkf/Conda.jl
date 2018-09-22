@@ -18,12 +18,12 @@ Conda.add("curl", env)
     pythonpath = joinpath(Conda.python_dir(env), "python" * exe)
     @test isfile(pythonpath)
 
+    Conda.add("jupyter")
+
     cmd = Conda._set_conda_env(`$pythonpath -c "import zmq"`, env)
     @test_throws Exception run(cmd)
     Conda.add("pyzmq", env)
     run(cmd)
-
-    Conda.add("jupyter")
 end
 
 curlvers = Conda.version("curl",env)
