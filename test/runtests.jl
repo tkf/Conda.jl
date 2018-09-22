@@ -14,11 +14,11 @@ rm(Conda.prefix(env); force=true, recursive=true)
 Conda.add("curl", env)
 
 @testset "Install Python package" begin
-    Conda.add("python=3.6", env)  # 3.7 doesn't work on Windows at the moment
+    Conda.add("python", env)
     pythonpath = joinpath(Conda.python_dir(env), "python" * exe)
     @test isfile(pythonpath)
 
-    Conda.add("jupyter")
+    Conda.add("jupyter", env)
 
     cmd = Conda._set_conda_env(`$pythonpath -c "import zmq"`, env)
     @test_throws Exception run(cmd)
