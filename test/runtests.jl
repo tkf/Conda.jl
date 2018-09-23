@@ -27,6 +27,7 @@ Conda.add("curl", env)
     cmd = Conda._set_conda_env(`$("python" * exe) -c $script`, env)
     path = read(cmd, String)
     @show path
+    @show readdir(dirname(path))
     @test normpath(dirname(path)) == normpath(Conda.python_dir(env))
 
     cmd = Conda._set_conda_env(`$("python" * exe) -c "import zmq"`, env)
