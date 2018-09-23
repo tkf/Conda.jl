@@ -118,7 +118,7 @@ function _set_path(env_var, env)
             joinpath(prefix(env), "Scripts"),
             joinpath(prefix(env), "bin"),
         ], path_sep)
-        # https://github.com/conda/conda/blob/4.6.0b0/conda/activate.py#L400-L404
+        # https://github.com/conda/conda/blob/4.6.0b0/conda/activate.py#L399-L404
     else
         more_path = bin_dir(env)
     end
