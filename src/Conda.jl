@@ -109,10 +109,23 @@ end
 
 function _set_path(env_var, env)
     path_sep = Compat.Sys.iswindows() ? ';' : ':'
-    if haskey(ENV, "PATH")
-        env_var["PATH"] = bin_dir(env) * path_sep * ENV["PATH"]
+    if Compat.Sys.iswindows()
+        more_path = join([
+            prefix(env),
+            joinpath(prefix(env), "Library", "mingw-w64", "bin"),
+            joinpath(prefix(env), "Library", "usr", "bin"),
+            joinpath(prefix(env), "Library", "bin"),
+            joinpath(prefix(env), "Scripts"),
+            joinpath(prefix(env), "bin"),
+        ], path_sep)
+        # https://github.com/conda/conda/blob/4.6.0b0/conda/activate.py#L400-L404
     else
-        env_var["PATH"] = bin_dir(env)
+        more_path = bin_dir(env)
+    end
+    if haskey(ENV, "PATH")
+        env_var["PATH"] = more_path * path_sep * ENV["PATH"]
+    else
+        env_var["PATH"] = more_path
     end
 end
 
