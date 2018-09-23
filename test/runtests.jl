@@ -18,7 +18,8 @@ Conda.add("curl", env)
     pythonpath = joinpath(Conda.python_dir(env), "python" * exe)
     @test isfile(pythonpath)
 
-    Conda.add("jupyter", env)
+    @info "Run: conda shell.powershell activate $env"
+    Conda.runconda(`shell.powershell activate $env`, env)
 
     script = """
     import sys
