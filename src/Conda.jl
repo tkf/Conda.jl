@@ -126,7 +126,7 @@ function _set_path(env_var, env)
         # ourselves:
         all_keys = collect(keys(env_var))
         ikey = findfirst(x -> uppercase(x) == "PATH", all_keys)
-        has_path = ikey !== nothing
+        has_key = ikey !== nothing
         path_key = all_keys[ikey]
     else
         more_path = bin_dir(env)
