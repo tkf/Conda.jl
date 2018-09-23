@@ -3,8 +3,7 @@ os:
     - osx
     - linux
 julia:
-    - 0.6
-    - nightly
+    - 1
 env:
     - CONDA_JL_VERSION="2"
     - CONDA_JL_VERSION="3"

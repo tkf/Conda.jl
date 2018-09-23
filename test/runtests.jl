@@ -50,3 +50,9 @@ Conda.add_channel("foo", env)
 
 Conda.rm_channel("foo", env)
 @test Conda.channels(env) == ["defaults"]
+
+using Pkg
+Conda.activate() do
+    Pkg.add("PyCall")
+    @eval using PyCall
+end
