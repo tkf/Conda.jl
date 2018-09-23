@@ -119,13 +119,26 @@ function _set_path(env_var, env)
             joinpath(prefix(env), "bin"),
         ], path_sep)
         # https://github.com/conda/conda/blob/4.6.0b0/conda/activate.py#L399-L404
+
+        # Environment variables are case-insensitive.  `Base.EnvDict`
+        # treats case sensitivity but `env_var` is an arbitrary
+        # dicttionary.  So, we need to treat case-insensitive lookup
+        # ourselves:
+        all_keys = collect(keys(env_var))
+        ikey = findfirst(x -> uppercase(x) == "PATH", all_keys)
+        has_path = ikey !== nothing
+        path_key = all_keys[ikey]
     else
         more_path = bin_dir(env)
+
+        path_key = "PATH"
+        has_key = haskey(env_var, path_key)
     end
-    if haskey(ENV, "PATH")
-        env_var["PATH"] = more_path * path_sep * ENV["PATH"]
+
+    if has_key
+        env_var[path_key] = more_path * path_sep * env_var[path_key]
     else
-        env_var["PATH"] = more_path
+        env_var[path_key] = more_path
     end
 end
 
