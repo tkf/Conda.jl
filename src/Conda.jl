@@ -116,6 +116,24 @@ function _set_path(env_var, env)
     end
 end
 
+"""
+    activate(f, [env::Environment = ROOTENV])
+
+Run a callable `f` while `ENV["PATH"]` is set to named conda
+environment `env`.
+"""
+function activate(f, env::Environment = ROOTENV; env_var = ENV)
+    orig_path = get(env_var, "PATH", nothing)
+    try
+        _set_path(env_var, env)
+        f()
+    finally
+        if orig_path !== nothing
+            env_var["PATH"] = orig_path
+        end
+    end
+end
+
 "Run conda command with environment variables set."
 function runconda(args::Cmd, env::Environment=ROOTENV)
     _install_conda(env)
