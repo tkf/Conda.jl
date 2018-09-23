@@ -20,6 +20,15 @@ Conda.add("curl", env)
 
     Conda.add("jupyter", env)
 
+    script = """
+    import sys
+    sys.stdout.write(sys.executable)
+    """
+    cmd = Conda._set_conda_env(`$("python" * exe) -c $script`, env)
+    path = read(cmd, String)
+    @show path
+    @test normpath(dirname(path)) == normpath(Conda.python_dir(env))
+
     cmd = Conda._set_conda_env(`$("python" * exe) -c "import zmq"`, env)
     @test_throws Exception run(cmd)
     Conda.add("pyzmq", env)
