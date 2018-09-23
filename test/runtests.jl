@@ -54,5 +54,5 @@ Conda.rm_channel("foo", env)
 using Pkg
 Conda.activate() do
     Pkg.add("PyCall")
-    @eval using PyCall
+    Pkg.test("PyCall")
 end
