@@ -107,19 +107,10 @@ function _set_conda_env(cmd, env::Environment=ROOTENV)
     setenv(cmd, env_var)
 end
 
-function _set_path(env_var, env)
-    path_sep = Compat.Sys.iswindows() ? ';' : ':'
-    if Compat.Sys.iswindows()
-        more_path = join([
-            prefix(env),
-            joinpath(prefix(env), "Library", "mingw-w64", "bin"),
-            joinpath(prefix(env), "Library", "usr", "bin"),
-            joinpath(prefix(env), "Library", "bin"),
-            joinpath(prefix(env), "Scripts"),
-            joinpath(prefix(env), "bin"),
-        ], path_sep)
-        # https://github.com/conda/conda/blob/4.6.0b0/conda/activate.py#L399-L404
+const path_sep = Compat.Sys.iswindows() ? ';' : ':'
 
+function _set_path(env_var, env)
+    if Compat.Sys.iswindows()
         # Environment variables are case-insensitive.  `Base.EnvDict`
         # treats case sensitivity but `env_var` is an arbitrary
         # dicttionary.  So, we need to treat case-insensitive lookup
@@ -129,34 +120,35 @@ function _set_path(env_var, env)
         has_key = ikey !== nothing
         path_key = all_keys[ikey]
     else
-        more_path = bin_dir(env)
-
         path_key = "PATH"
         has_key = haskey(env_var, path_key)
     end
 
     if has_key
-        env_var[path_key] = more_path * path_sep * env_var[path_key]
+        env_var[path_key] = extra_path(env) * path_sep * env_var[path_key]
     else
-        env_var[path_key] = more_path
+        env_var[path_key] = extra_path(env)
     end
 end
 
 """
-    activate(f, [env::Environment = ROOTENV])
+    extra_path(env::Environment)
 
-Run a callable `f` while `ENV["PATH"]` is set to named conda
-environment `env`.
+Extra `ENV["PATH"]` required for conda environment `env`.
 """
-function activate(f, env::Environment = ROOTENV; env_var = ENV)
-    orig_path = get(env_var, "PATH", nothing)
-    try
-        _set_path(env_var, env)
-        f()
-    finally
-        if orig_path !== nothing
-            env_var["PATH"] = orig_path
-        end
+function extra_path(env::Environment)
+    if Compat.Sys.iswindows()
+        return join([
+            prefix(env),
+            joinpath(prefix(env), "Library", "mingw-w64", "bin"),
+            joinpath(prefix(env), "Library", "usr", "bin"),
+            joinpath(prefix(env), "Library", "bin"),
+            joinpath(prefix(env), "Scripts"),
+            joinpath(prefix(env), "bin"),
+        ], path_sep)
+        # https://github.com/conda/conda/blob/4.6.0b0/conda/activate.py#L399-L404
+    else
+        return bin_dir(env)
     end
 end
 
