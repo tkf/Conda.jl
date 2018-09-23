@@ -20,7 +20,7 @@ Conda.add("curl", env)
 
     Conda.add("jupyter", env)
 
-    cmd = Conda._set_conda_env(`$pythonpath -c "import zmq"`, env)
+    cmd = Conda._set_conda_env(`python -c "import zmq"`, env)
     @test_throws Exception run(cmd)
     Conda.add("pyzmq", env)
     run(cmd)
